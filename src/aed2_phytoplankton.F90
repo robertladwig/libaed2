@@ -45,6 +45,7 @@
 !###############################################################################
 
 #include "aed2.h"
+#include "test_file.f90"
 
 MODULE aed2_phytoplankton
 !-------------------------------------------------------------------------------
@@ -124,6 +125,7 @@ CONTAINS
 
 !###############################################################################
 SUBROUTINE aed2_phytoplankton_load_params(data, dbase, count, list, settling, resuspension)
+   implicit none
 !-------------------------------------------------------------------------------
 !ARGUMENTS
    CLASS (aed2_phytoplankton_data_t),INTENT(inout) :: data
@@ -136,12 +138,21 @@ SUBROUTINE aed2_phytoplankton_load_params(data, dbase, count, list, settling, re
 !LOCALS
    INTEGER  :: status
    INTEGER  :: i,tfil
+   real ( kind = 8) mu
+   real ( kind = 8 ) r4_normal_ab
+   integer ( kind = 4 ) seed
+   real ( kind = 8 ) sigma 
+   real ( kind = 8 ) r
    AED_REAL :: minNut
 
    TYPE(phyto_nml_data) :: pd(MAX_PHYTO_TYPES)
    NAMELIST /phyto_data/ pd
 !-------------------------------------------------------------------------------
 !BEGIN
+    mu = 0.0E+00
+    sigma = 1.0E+00
+    seed = 123456789
+    r=r4_normal_ab(mu,sigma,seed)
     tfil = find_free_lun()
     open(tfil,file=dbase, status='OLD', iostat=status)
     IF (status /= 0) STOP 'Cannot open phyto_data namelist file'
@@ -174,7 +185,7 @@ SUBROUTINE aed2_phytoplankton_load_params(data, dbase, count, list, settling, re
        data%phytos(i)%settling     = settling(i)
        data%phytos(i)%resuspension = resuspension(i)
        data%phytos(i)%Xcc          = pd(list(i))%Xcc
-       data%phytos(i)%R_growth     = pd(list(i))%R_growth/secs_per_day
+       data%phytos(i)%R_growth     = r/secs_per_day
        data%phytos(i)%fT_Method    = pd(list(i))%fT_Method
        data%phytos(i)%theta_growth = pd(list(i))%theta_growth
        data%phytos(i)%T_std        = pd(list(i))%T_std
@@ -993,6 +1004,7 @@ SUBROUTINE aed2_calculate_phytoplankton(data,column,layer_idx)
 
 END SUBROUTINE aed2_calculate_phytoplankton
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 
 
 !###############################################################################
