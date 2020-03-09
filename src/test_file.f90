@@ -29,7 +29,7 @@ function r4_normal_ab ( a, b, seed )
   integer (kind=4) val
   real ( kind = 8 ) random_val
 
-  val=362437;
+  val=3624378;
   random_val=0.99
   call random_number(random_val)
   seed=IDINT(random_val*seed)
