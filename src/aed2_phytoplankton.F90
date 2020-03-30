@@ -47,9 +47,10 @@
 #include "aed2.h"
 #include "test_file.f90"
 
-#define sigma 1.0E+00
-#define mu_growth  0.0E+00
+#define sigma 5.0E+00
+#define mu_growth  5.0E+00
 #define seed_growth 123456789
+
 
 MODULE aed2_phytoplankton
 !-------------------------------------------------------------------------------
@@ -146,7 +147,7 @@ SUBROUTINE aed2_phytoplankton_load_params(data, dbase, count, list, settling, re
    real ( kind = 8 ) r4_normal_ab
    !integer ( kind = 4 ) seed
    !real ( kind = 8 ) sigma 
-   real ( kind = 8 ) r
+   !real ( kind = 8 ) r
    AED_REAL :: minNut
 
    TYPE(phyto_nml_data) :: pd(MAX_PHYTO_TYPES)
@@ -156,7 +157,7 @@ SUBROUTINE aed2_phytoplankton_load_params(data, dbase, count, list, settling, re
     !mu = 0.0E+00
     !sigma = 1.0E+00
     !seed = 123456789
-    r=r4_normal_ab(mu_growth,sigma,seed_growth)
+    !r=r4_normal_ab(mu_growth,sigma,seed_growth)
     tfil = find_free_lun()
     open(tfil,file=dbase, status='OLD', iostat=status)
     IF (status /= 0) STOP 'Cannot open phyto_data namelist file'
@@ -189,7 +190,7 @@ SUBROUTINE aed2_phytoplankton_load_params(data, dbase, count, list, settling, re
        data%phytos(i)%settling     = settling(i)
        data%phytos(i)%resuspension = resuspension(i)
        data%phytos(i)%Xcc          = pd(list(i))%Xcc
-       data%phytos(i)%R_growth     = r/secs_per_day
+       !data%phytos(i)%R_growth     = r/secs_per_day
        data%phytos(i)%fT_Method    = pd(list(i))%fT_Method
        data%phytos(i)%theta_growth = pd(list(i))%theta_growth
        data%phytos(i)%T_std        = pd(list(i))%T_std
@@ -723,7 +724,7 @@ SUBROUTINE aed2_calculate_phytoplankton(data,column,layer_idx)
 
       !------------------------------------------------------------------------+
       ! Primary production rate
-      ! Look here for change in R_growth variable in comparison to previous iterations!!
+      ! Look here for change in R_growth variable in comparison to previous it	erations!!
       primprod(phy_i) = (r4_normal_ab(mu_growth,sigma,seed_growth)/secs_per_day)* fT * findMin(fI,fNit,fPho,fSil) * fxl
 
       ! Adjust primary production rate for nitrogen fixers
